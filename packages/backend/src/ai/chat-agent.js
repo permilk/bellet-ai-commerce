@@ -113,30 +113,21 @@ function buildDocContext(documents) {
 async function generateGeminiResponse(message, productCtx, docCtx, chatHistory) {
   if (!model) return null;
 
-  const contextPrompt = SYSTEM_PROMPT + productCtx + docCtx;
+  let fullPrompt = SYSTEM_PROMPT + productCtx + docCtx;
 
-  const contents = [];
-
-  // Add chat history
+  // Add recent conversation context
   if (chatHistory && chatHistory.length > 0) {
-    for (const msg of chatHistory.slice(-10)) { // Last 10 messages for context
-      contents.push({
-        role: msg.role === 'customer' ? 'user' : 'model',
-        parts: [{ text: msg.content }]
-      });
+    fullPrompt += '\n\nHISTORIAL DE CONVERSACIÓN RECIENTE:\n';
+    for (const msg of chatHistory.slice(-6)) {
+      const role = msg.role === 'customer' ? 'Cliente' : 'Bella';
+      fullPrompt += `${role}: ${msg.content}\n`;
     }
   }
 
-  // Add current message
-  contents.push({ role: 'user', parts: [{ text: message }] });
+  fullPrompt += `\nCliente: ${message}\nBella:`;
 
   try {
-    const chat = model.startChat({
-      history: contents.slice(0, -1),
-      systemInstruction: contextPrompt,
-    });
-
-    const result = await chat.sendMessage(message);
+    const result = await model.generateContent(fullPrompt);
     const response = result.response.text();
     return response;
   } catch (err) {
