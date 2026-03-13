@@ -1,0 +1,20 @@
+{
+  "name": "bellet-ai-commerce",
+  "version": "1.0.0",
+  "description": "Bellet AI Commerce Platform - Sistema de automatización comercial con IA",
+  "private": true,
+  "workspaces": [
+    "packages/backend",
+    "packages/frontend"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "cd packages/backend && npm run dev",
+    "dev:frontend": "cd packages/frontend && npm run dev",
+    "build": "cd packages/frontend && npm run build",
+    "seed": "cd packages/backend && npm run seed"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
